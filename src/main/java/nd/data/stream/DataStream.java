@@ -3,7 +3,6 @@ package nd.data.stream;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -16,9 +15,6 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import com.opencsv.exceptions.CsvException;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,17 +50,6 @@ public class DataStream implements Closeable {
             logger.error(msg, e);
         }
         return new ArrayList<>();
-    }
-
-    public Elements streamElements(final String selector){
-        try (final InputStream is = iStream.getInputStream();) {
-            Document d = Jsoup.parse(is, "UTF-8", "");
-            return d.select(selector);
-        } catch (IOException e) {
-            final String msg = "Issue reading Lines " + iStream.getURI();
-            logger.error(msg, e);
-            return null;
-        }
     }
 
     public static boolean streamToOutputStream(final Stream<String> sts, final OutputStream os) {
