@@ -1,6 +1,5 @@
 package nd.data.stream;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,7 +14,7 @@ public class DataStreamTest {
     @Test
     public void streamToOutputStreamFileTest(){
     	logger.info("Testing Stream to Sys out");
-        try (StringToInputStream stis = StringToInputStream.toInputStream("src/test/resources/testcsv.txt")) {
+        try (StringToInputStream stis = StringToInputStream.toInputStream(CsvStreamTest.TESTCSV)) {
             Assertions.assertNotNull(stis);
             Assertions.assertNotNull(stis.is);
             final DataStream ds = new DataStream(stis);
@@ -45,22 +44,6 @@ public class DataStreamTest {
             //os);
             System.out);
             //os.close();
-            Assertions.assertTrue(ret);
-        } catch (final Exception e) {
-            Assertions.assertTrue(false);//This SHould NEVER happen
-        }        
-    }
-
-    @Test
-    public void streamColumnsTest(){
-        try (StringToInputStream stis = StringToInputStream.toInputStream("src/test/resources/testcsv.txt")) {
-            Assertions.assertNotNull(stis);
-            Assertions.assertNotNull(stis.is);
-            final DataStream ds = new DataStream(stis);
-            Assertions.assertNotNull(ds);
-            final List<String[]> strm = ds.streamColumns();
-            Assertions.assertNotNull(strm);
-            final boolean ret = DataStream.streamToOutputStream(strm.stream().map(ln -> Arrays.toString(ln)), System.out);
             Assertions.assertTrue(ret);
         } catch (final Exception e) {
             Assertions.assertTrue(false);//This SHould NEVER happen
@@ -98,7 +81,7 @@ public class DataStreamTest {
     
     @Test
     public void createBeansTest(){
-        try (StringToInputStream stis = StringToInputStream.toInputStream("src/test/resources/testcsv.txt")) {
+        try (StringToInputStream stis = StringToInputStream.toInputStream(CsvStreamTest.TESTCSV)) {
             Assertions.assertNotNull(stis);
             Assertions.assertNotNull(stis.is);
             final DataStream ds = new DataStream(stis);

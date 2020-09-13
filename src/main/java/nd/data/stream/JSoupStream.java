@@ -1,5 +1,6 @@
 package nd.data.stream;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -15,7 +16,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JSoupStream {
+public class JSoupStream implements Closeable {
     private static final Logger logger = LoggerFactory.getLogger(JSoupStream.class);
 
     protected StringToInputStream iStream;
@@ -33,16 +34,16 @@ public class JSoupStream {
     	}
     }
     
-    public Stream<Element> streamRows(){
-    	return currentElements.stream()
-    		.map(e -> e.select(rowsSelector).stream())
-    		.reduce(Stream.empty(), (c1,c2) -> Stream.concat(c1, c2));
-    }
-    
     public Stream<List<String>> streamLines() {
     	return streamRows()
     		.map(e  -> e.select(columnSelector))
     		.map(es -> es.stream().map(e -> e.text()).collect(Collectors.toList()));
+    }
+    
+    public Stream<Element> streamRows(){
+    	return currentElements.stream()
+    		.map(e -> e.select(rowsSelector).stream())
+    		.reduce(Stream.empty(), (c1,c2) -> Stream.concat(c1, c2));
     }
     
     protected void processFirstHeader() {
@@ -53,7 +54,7 @@ public class JSoupStream {
             .collect(Collectors.toMap(idx -> hdrs.get(idx).text(), idx -> idx));
     }
 
-    public Elements streamElements(final String selector){
+    private Elements streamElements(final String selector){
         try (final InputStream is = iStream.getInputStream();) {
             Document d = Jsoup.parse(is, "UTF-8", "");
             return d.select(selector);
@@ -63,29 +64,14 @@ public class JSoupStream {
             return null;
         }
     }
-    
-    public void printRows() {
-    	final Elements strm = streamElements(tableSelector);
-        strm.stream().forEach(e -> {
-            final Element e1 = e;
-            final String msg = "Table: #" + e1.id() + "." + e1.className();
-            logger.info("");
-            logger.info("Processing : {}", msg);
-            final Elements hdrs = e1.select(headerSelector);
-            hdrs.stream().forEach(h -> {
-                logger.info("Header : {}", h.text());
-            });
-            final Elements rows = e1.select(rowsSelector);
-            rows.stream().forEach(r -> {
-            	final Elements columns = r.select(columnSelector);
-            	final String row = columns.stream().map(c -> c.text()).collect(Collectors.joining(","));
-                logger.info("Rows : {}", row);
-            });
-            //System.out.println(msg);
-            //System.out.println(e1.outerHtml());
-            //System.out.println(e1.html());
-        });
-    }
+
+	@Override
+	public void close() throws IOException {
+		currentElements = null;
+        if (null != iStream) {
+            iStream.close();
+        }
+	}
 
 	public void setTableSelector(String tableSelector) {
 		this.tableSelector = tableSelector;
@@ -96,7 +82,6 @@ public class JSoupStream {
 	public void setRowsSelector(String rowsSelector) {
 		this.rowsSelector = rowsSelector;
 	}
-
 	public void setColumnSelector(String columnSelector) {
 		this.columnSelector = columnSelector;
 	}
