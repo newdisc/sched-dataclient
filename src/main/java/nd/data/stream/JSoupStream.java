@@ -88,4 +88,7 @@ public class JSoupStream implements Closeable {
 	public void setiStream(StringToInputStream iStream) {
 		this.iStream = iStream;
 	}
+	public Map<String, Integer> getHeader() {
+		return header;
+	}
 }

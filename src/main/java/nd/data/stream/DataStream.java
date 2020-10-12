@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -24,6 +26,26 @@ public class DataStream implements Closeable {
     public Stream<String> streamLines() {
         final BufferedReader br = setReader();
         return br.lines();
+    }
+    
+    public static List<Integer> adaptInterestIndex(List<String> colsInterest, Map<String, Integer> hdrToIdx){
+    	return colsInterest
+    			.stream()
+    			.map(hdr -> hdrToIdx.get(hdr))
+    			.collect(Collectors.toList());
+    }
+    public static Stream<List<String> > adaptInterestHeader(List<Integer> colsInterest, Stream<List<String>> original) {
+    	return original.map(line -> {
+    		int lsz = line.size();
+    		return colsInterest.stream().map(idx -> {
+    			if (null == idx || idx > lsz || idx < 0) {
+    				logger.debug("Out of range index: {}, {}", idx, line);
+    				return null;
+    			}
+    			return line.get(idx);
+    		})
+    		.collect(Collectors.toList());
+    	});
     }
 
     public <T> List<T> createBeans(final Class<T> typeClass) {
