@@ -11,6 +11,17 @@ import org.slf4j.LoggerFactory;
 public class DataStreamTest {
     private static final Logger logger = LoggerFactory.getLogger(DataStreamTest.class);
     public static final String WMCVDHTML = "https://www.worldometers.info/coronavirus/";
+    
+    @Test
+    public void printTrustedKeysTest() {
+    	logger.info("Printing Trusted Keys: ");
+    	DataStream.printTrustedKeys();
+    }
+    @Test
+    public void printKeyStoreTest() {
+    	logger.info("Printing Trusted Keys: ");
+    	DataStream.printKeyStore();
+    }
     @Test
     public void streamToOutputStreamFileTest(){
     	logger.info("Testing Stream to Sys out");

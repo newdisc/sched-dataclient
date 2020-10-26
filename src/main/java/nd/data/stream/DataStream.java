@@ -2,11 +2,27 @@ package nd.data.stream;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.PKIXParameters;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -95,5 +111,89 @@ public class DataStream implements Closeable {
 
     public DataStream(final StringToInputStream is) {
         iStream = is;
+    }
+    public static void printTrustedKeys() {
+    	final String SSLTS = "javax.net.ssl.trustStore";
+    	final String SSLTSP = "javax.net.ssl.trustStorePassword";
+    	String trustfile = System.getProperty(SSLTS);
+    	if (null == trustfile) {
+    		trustfile = System.getProperty("java.home") + 
+    				"/lib/security/cacerts".replace('/', File.separatorChar);
+    	}
+    	String trustpass = System.getProperty(SSLTSP);
+    	if (null == trustpass) {
+    		trustpass = "changeit";
+    	}
+        // Load the JDK's cacerts keystore file
+        try (FileInputStream is = new FileInputStream(trustfile);) {
+            
+            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keystore.load(is, trustpass.toCharArray());
+
+            // This class retrieves the most-trusted CAs from the keystore
+            PKIXParameters params = new PKIXParameters(keystore);
+
+            // Get the set of trust anchors, which contain the most-trusted CA certificates
+            Iterator<TrustAnchor> it = params.getTrustAnchors().iterator();
+            while( it.hasNext() ) {
+                TrustAnchor ta = it.next();
+                // Get certificate
+                X509Certificate cert = ta.getTrustedCert();
+                
+                logger.info("Certificate Name: {}", cert.getSubjectX500Principal().getName());
+            }
+        } catch (CertificateException | KeyStoreException | IOException |
+        		NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
+            logger.error("Could NOT read trust store", e);
+        }     	
+    }
+    public static void printKeyStore() {
+    	final String SSLKS = "javax.net.ssl.keyStore";
+    	final String SSLKSP = "javax.net.ssl.keyStorePassword";
+    	String keyfile = System.getProperty(SSLKS);
+    	if (null == keyfile) {
+    		keyfile = System.getProperty("java.home") + 
+    				"/lib/security/cacerts".replace('/', File.separatorChar);
+    	}
+    	String keypass = System.getProperty(SSLKSP);
+    	if (null == keypass) {
+    		keypass = "changeit";
+    	}
+        // Load the JDK's cacerts keystore file
+        try (FileInputStream is = new FileInputStream(keyfile);) {
+        	KeyStore keyStore = KeyStore.getInstance("JKS");//.jks file
+        	char[] cakp = keypass.toCharArray();
+        	/*
+try{
+    KeyStore keyStore = KeyStore.getInstance("Windows-MY");
+    keyStore.load(null, null);  // Load keystore
+} catch (Exception ex){
+    ex.printStackTrace();
+}
+        	 * */
+        	keyStore.load(is, cakp);
+        	Enumeration<String> es = keyStore.aliases();
+        	String alias = "";
+        	while (es.hasMoreElements()) {
+        		alias = (String) es.nextElement();
+        		// if alias refers to a private key break at that point
+        		// as we want to use that certificate
+        		if (!keyStore.isKeyEntry(alias)) {
+        			logger.info("NOT a private key: {}", alias );
+        			continue;
+        		}
+        		KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias,
+        				new KeyStore.PasswordProtection(cakp));
+        		PrivateKey myPrivateKey = pkEntry.getPrivateKey();
+        		// Load certificate chain
+        		Certificate[] chain = keyStore.getCertificateChain(alias);
+        		X509Certificate pkcert = (X509Certificate)chain[0];
+
+        		logger.info("Found Private Key: {}", pkcert.getSubjectX500Principal().getName());
+			}
+        } catch (KeyStoreException | NoSuchAlgorithmException |  
+        		CertificateException | IOException | UnrecoverableEntryException e) {
+            logger.error("Could NOT read trust store", e);
+        }
     }
 }
