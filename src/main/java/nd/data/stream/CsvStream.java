@@ -25,7 +25,7 @@ public class CsvStream implements Closeable {
     public Stream<List<String>> streamLines() {
         try (final BufferedReader br = setReader();
                 final CSVReader cr = new CSVReader(br);) {
-            return cr.readAll().stream().map(la -> Arrays.asList(la));
+            return cr.readAll().stream().map(Arrays::asList);
         } catch (IOException | CsvException e) {
             final String msg = "Issue reading Lines " + iStream.getURI();
             logger.error(msg, e);
@@ -46,7 +46,7 @@ public class CsvStream implements Closeable {
     
     public static Map<String, Integer> headerMap(List<String> header) {
     	return IntStream.range(0,  header.size()).boxed()
-    			.collect(Collectors.toMap(idx -> header.get(idx), idx -> idx));
+    			.collect(Collectors.toMap(header::get, idx -> idx));
     }
 
 	@Override

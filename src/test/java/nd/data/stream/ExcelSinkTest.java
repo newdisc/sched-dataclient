@@ -27,6 +27,7 @@ public class ExcelSinkTest {
             Assertions.assertTrue(ret);
             ret = xs.save("out.xlsx");
             Assertions.assertTrue(ret);
+            xs.close();
         } catch (final Exception e) {
             Assertions.assertTrue(false);//This SHould NEVER happen
         }
