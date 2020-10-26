@@ -37,13 +37,13 @@ public class JSoupStream implements Closeable {
     public Stream<List<String>> streamLines() {
     	return streamRows()
     		.map(e  -> e.select(columnSelector))
-    		.map(es -> es.stream().map(e -> e.text()).collect(Collectors.toList()));
+    		.map(es -> es.stream().map(Element::text).collect(Collectors.toList()));
     }
     
     public Stream<Element> streamRows(){
     	return currentElements.stream()
     		.map(e -> e.select(rowsSelector).stream())
-    		.reduce(Stream.empty(), (c1,c2) -> Stream.concat(c1, c2));
+    		.reduce(Stream.empty(), Stream::concat);
     }
     
     protected void processFirstHeader() {
@@ -67,7 +67,7 @@ public class JSoupStream implements Closeable {
 
 	@Override
 	public void close() throws IOException {
-		currentElements = null;
+		//currentElements = null;//Allow access after try-resource-close
         if (null != iStream) {
             iStream.close();
         }
