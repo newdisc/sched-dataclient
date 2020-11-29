@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -13,7 +12,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.UnrecoverableEntryException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -184,7 +182,7 @@ try{
         		}
         		KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias,
         				new KeyStore.PasswordProtection(cakp));
-        		PrivateKey myPrivateKey = pkEntry.getPrivateKey();
+        		//PrivateKey myPrivateKey = pkEntry.getPrivateKey();
         		// Load certificate chain
         		Certificate[] chain = keyStore.getCertificateChain(alias);
         		X509Certificate pkcert = (X509Certificate)chain[0];
