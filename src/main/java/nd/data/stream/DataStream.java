@@ -12,7 +12,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.PKIXParameters;
@@ -180,8 +179,8 @@ try{
         			logger.info("NOT a private key: {}", alias );
         			continue;
         		}
-        		KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias,
-        				new KeyStore.PasswordProtection(cakp));
+        		//KeyStore.PrivateKeyEntry pkEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias,
+        		//		new KeyStore.PasswordProtection(cakp));
         		//PrivateKey myPrivateKey = pkEntry.getPrivateKey();
         		// Load certificate chain
         		Certificate[] chain = keyStore.getCertificateChain(alias);
@@ -190,7 +189,7 @@ try{
         		logger.info("Found Private Key: {}", pkcert.getSubjectX500Principal().getName());
 			}
         } catch (KeyStoreException | NoSuchAlgorithmException |  
-        		CertificateException | IOException | UnrecoverableEntryException e) {
+        		CertificateException | IOException e) {
             logger.error("Could NOT read trust store", e);
         }
     }
