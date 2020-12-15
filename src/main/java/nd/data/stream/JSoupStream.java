@@ -73,20 +73,25 @@ public class JSoupStream implements Closeable {
         }
 	}
 
-	public void setTableSelector(String tableSelector) {
+	public JSoupStream setTableSelector(String tableSelector) {
 		this.tableSelector = tableSelector;
+		return this;
 	}
-	public void setHeaderSelector(String headerSelector) {
+	public JSoupStream setHeaderSelector(String headerSelector) {
 		this.headerSelector = headerSelector;
+		return this;
 	}
-	public void setRowsSelector(String rowsSelector) {
+	public JSoupStream setRowsSelector(String rowsSelector) {
 		this.rowsSelector = rowsSelector;
+		return this;
 	}
-	public void setColumnSelector(String columnSelector) {
+	public JSoupStream setColumnSelector(String columnSelector) {
 		this.columnSelector = columnSelector;
+		return this;
 	}
-	public void setiStream(StringToInputStream iStream) {
+	public JSoupStream setiStream(StringToInputStream iStream) {
 		this.iStream = iStream;
+		return this;
 	}
 	public Map<String, Integer> getHeader() {
 		return header;
