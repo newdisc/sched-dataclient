@@ -7,10 +7,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class CsvStreamTest {
+class CsvStreamTest {
 	public static final String TESTCSV = "src/test/resources/testcsv.txt";
     @Test
-    public void streamColumnsTest(){
+    void streamColumnsTest(){
         try (StringToInputStream stis = StringToInputStream.toInputStream(TESTCSV)) {
             Assertions.assertNotNull(stis);
             Assertions.assertNotNull(stis.is);

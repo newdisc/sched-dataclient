@@ -6,10 +6,10 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ExcelSinkTest {
+class ExcelSinkTest {
 	public static final String TESTXLSX = "src/test/resources/testxlsx.xlsx";
     @Test
-    public void streamColumnsTest(){
+    void streamColumnsTest(){
         try (StringToInputStream stis = StringToInputStream.toInputStream(CsvStreamTest.TESTCSV);
         	StringToInputStream stisxl = StringToInputStream.toInputStream(TESTXLSX);) {
             Assertions.assertNotNull(stis);

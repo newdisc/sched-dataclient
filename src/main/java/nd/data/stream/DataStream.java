@@ -44,7 +44,7 @@ public class DataStream implements Closeable {
     public static List<Integer> adaptInterestIndex(List<String> colsInterest, Map<String, Integer> hdrToIdx){
     	return colsInterest
     			.stream()
-    			.map(hdr -> hdrToIdx.get(hdr))
+    			.map(hdrToIdx::get)
     			.collect(Collectors.toList());
     }
     public static Stream<List<String> > adaptInterestHeader(List<Integer> colsInterest, Stream<List<String>> original) {
@@ -160,19 +160,11 @@ public class DataStream implements Closeable {
         try (FileInputStream is = new FileInputStream(keyfile);) {
         	KeyStore keyStore = KeyStore.getInstance("JKS");//.jks file
         	char[] cakp = keypass.toCharArray();
-        	/*
-try{
-    KeyStore keyStore = KeyStore.getInstance("Windows-MY");
-    keyStore.load(null, null);  // Load keystore
-} catch (Exception ex){
-    ex.printStackTrace();
-}
-        	 * */
         	keyStore.load(is, cakp);
         	Enumeration<String> es = keyStore.aliases();
         	String alias = "";
         	while (es.hasMoreElements()) {
-        		alias = (String) es.nextElement();
+        		alias = es.nextElement();
         		// if alias refers to a private key break at that point
         		// as we want to use that certificate
         		if (!keyStore.isKeyEntry(alias)) {

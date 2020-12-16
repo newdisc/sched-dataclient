@@ -11,7 +11,7 @@ import org.thymeleaf.context.Context;
 
 public class ThymeleafSink implements Closeable{
 	private static final Logger logger = LoggerFactory.getLogger(ThymeleafSink.class);
-	private TemplateEngine engine = new TemplateEngine();;
+	private TemplateEngine engine = new TemplateEngine();
 	private Context context = new Context(Locale.US);
 	
 	public String load(final String templateName) {

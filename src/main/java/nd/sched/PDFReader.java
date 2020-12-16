@@ -32,6 +32,7 @@ public class PDFReader extends PDFTextStripper{
         start = s;
         end = e;
     }
+    @Override
     protected void endPage(PDPage page) throws IOException {
         if (curRow.size() >= nCols) {
             completeLine();
@@ -132,7 +133,7 @@ public class PDFReader extends PDFTextStripper{
 
         stripper.writeText(document, dummy);        
     } catch (IOException e) {
-        logger.error("Problem reading file: " + filepath, e);
+        logger.error("Problem reading file: {}", filepath, e);
     }
     }
 

@@ -1,5 +1,6 @@
 package nd.data.stream;
 
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -8,22 +9,24 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataStreamTest {
+class DataStreamTest {
     private static final Logger logger = LoggerFactory.getLogger(DataStreamTest.class);
     public static final String WMCVDHTML = "https://www.worldometers.info/coronavirus/";
     
     @Test
-    public void printTrustedKeysTest() {
+    void printTrustedKeysTest() {
     	logger.info("Printing Trusted Keys: ");
     	DataStream.printTrustedKeys();
+    	Assertions.assertTrue(true);
     }
     @Test
-    public void printKeyStoreTest() {
+    void printKeyStoreTest() {
     	logger.info("Printing Trusted Keys: ");
     	DataStream.printKeyStore();
+    	Assertions.assertTrue(true);
     }
     @Test
-    public void streamToOutputStreamFileTest(){
+    void streamToOutputStreamFileTest(){
     	logger.info("Testing Stream to Sys out");
         try (StringToInputStream stis = StringToInputStream.toInputStream(CsvStreamTest.TESTCSV)) {
             Assertions.assertNotNull(stis);
@@ -40,21 +43,21 @@ public class DataStreamTest {
     }
     
     @Test
-    public void streamToOutputStreamWebTest(){
+    void streamToOutputStreamWebTest(){
         try (StringToInputStream stis = StringToInputStream.toInputStream(
-        		//JSoupStreamTest.WMCVDHTML)) {
-        		StringToInputStreamTest.WIKIURL)) {
+        		WMCVDHTML)) {
+        		//StringToInputStreamTest.WIKIURL)) {
             Assertions.assertNotNull(stis);
             Assertions.assertNotNull(stis.is);
             final DataStream ds = new DataStream(stis);
             Assertions.assertNotNull(ds);
             final Stream<String> strm = ds.streamLines();
             Assertions.assertNotNull(strm);
-            //final FileOutputStream os = new FileOutputStream("testout.txt");
+            final FileOutputStream os = new FileOutputStream("testout.txt");
             final boolean ret = DataStream.streamToOutputStream(strm, 
-            //os);
-            System.out);
-            //os.close();
+            os);
+            //System.out);
+            os.close();
             Assertions.assertTrue(ret);
         } catch (final Exception e) {
             Assertions.assertTrue(false);//This SHould NEVER happen
@@ -91,7 +94,7 @@ public class DataStreamTest {
     }
     
     @Test
-    public void createBeansTest(){
+    void createBeansTest(){
         try (StringToInputStream stis = StringToInputStream.toInputStream(CsvStreamTest.TESTCSV)) {
             Assertions.assertNotNull(stis);
             Assertions.assertNotNull(stis.is);
